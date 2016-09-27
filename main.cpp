@@ -1,6 +1,5 @@
 /*
-  Mbed OS 5 example for asynchronous I2S/DMA streaming between BT front end & 
-  backend based on STa350BW
+ * ARM mbed OS 5 example for asynchronous I2S/DMA streaming between BT front-end & back-end based on STa350BW
  */
 #include "mbed.h"
 #include "I2S.h"
