@@ -1,8 +1,0 @@
-{
-    "target_overrides": {
-        "*": {
-	   "target.macros_remove": ["TRANSACTION_QUEUE_SIZE_I2S=2"],
-	   "target.macros_add": ["TRANSACTION_QUEUE_SIZE_I2S=0"]
-	}
-    }
-}
