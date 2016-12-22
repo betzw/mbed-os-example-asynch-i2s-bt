@@ -40,6 +40,9 @@ static int8_t dma_buffer_rx[DMA_BUFFER_SIZE];
 static int8_t dma_buffer_tx[DMA_BUFFER_SIZE];
 #endif
 
+#include "rtos/Thread.h"
+static rtos::Thread i2s_bh_daemon;
+
 class I2STest {
 
 public:
@@ -71,7 +74,10 @@ public:
     	/* harmonize I2S devices */
     	I2S::harmonize(recv_i2s, sta350.dev_i2s);
 
-    	printf("\r\nTransfer test inited!\r\n");
+	Callback<void()> i2s_bh_task(&I2S::i2s_bh_queue, &events::EventQueue::dispatch_forever);
+	i2s_bh_daemon.start(i2s_bh_task); // betzw - TODO: this requires a RTOS (i.e. needs to be generalized for mbed-classic)
+
+	printf("\r\nTransfer test inited!\r\n");
     }
     
     void start_reception() {
