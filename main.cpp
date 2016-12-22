@@ -58,8 +58,8 @@ public:
 
     	/* configure sound terminal */
     	if(sta350.Init(37, AUDIO_FREQ)) {
-    		printf("%s(%d): sta350bw init failed!\r\n", __func__, __LINE__);
-    		exit(-1);
+	    printf("%s(%d): sta350bw init failed!\r\n", __func__, __LINE__);
+	    exit(-1);
     	}
     	sta350.dev_i2s.set_mode(MASTER_TX, true);
 
@@ -68,6 +68,9 @@ public:
     	recv_i2s.set_mode(MASTER_RX, true);
     	recv_i2s.format(16, 32);
 
+    	/* harmonize I2S devices */
+    	I2S::harmonize(recv_i2s, sta350.dev_i2s);
+
     	printf("\r\nTransfer test inited!\r\n");
     }
     
@@ -75,13 +78,13 @@ public:
         printf("Starting reception\r\n");
 
         int res = recv_i2s.transfer(
-        		(void*)NULL, 0,
-				(void*)dma_buffer_rx, sizeof(dma_buffer_rx),
-				event_callback_t(this, &I2STest::reception_complete_cb),
-				I2S_EVENT_ALL);
+	    (void*)NULL, 0,
+	    (void*)dma_buffer_rx, sizeof(dma_buffer_rx),
+	    event_callback_t(this, &I2STest::reception_complete_cb),
+	    I2S_EVENT_ALL);
 
         if(res != 0) {
-        	error("%s, %d: res=%d\r\n", __func__, __LINE__, res);
+	    error("%s, %d: res=%d\r\n", __func__, __LINE__, res);
         }
     }
 
@@ -90,16 +93,16 @@ public:
 
         int res = sta350.dev_i2s.transfer(
 #ifdef USE_MEMCPY
-        		(void*)dma_buffer_tx, sizeof(dma_buffer_tx),
+	    (void*)dma_buffer_tx, sizeof(dma_buffer_tx),
 #else
-				(void*)dma_buffer_rx, sizeof(dma_buffer_rx),
+	    (void*)dma_buffer_rx, sizeof(dma_buffer_rx),
 #endif
-				(void*)NULL, 0,
-				event_callback_t(this, &I2STest::transfer_complete_cb),
-				I2S_EVENT_ALL);
+	    (void*)NULL, 0,
+	    event_callback_t(this, &I2STest::transfer_complete_cb),
+	    I2S_EVENT_ALL);
 
         if(res != 0) {
-        	error("%s, %d: res=%d\r\n", __func__, __LINE__, res);
+	    error("%s, %d: res=%d\r\n", __func__, __LINE__, res);
         }
     }
 
@@ -114,9 +117,9 @@ private:
     void reception_complete_cb(int narg) {
 #ifdef USE_MEMCPY
     	if(narg & I2S_EVENT_RX_COMPLETE) {
-    		memcpy(&dma_buffer_tx[DMA_BUF_HALF_SIZE], &dma_buffer_rx[DMA_BUF_HALF_SIZE], DMA_BUF_HALF_SIZE);
+	    memcpy(&dma_buffer_tx[DMA_BUF_HALF_SIZE], &dma_buffer_rx[DMA_BUF_HALF_SIZE], DMA_BUF_HALF_SIZE);
     	} else {
-    		memcpy(&dma_buffer_tx[0], &dma_buffer_rx[0], DMA_BUF_HALF_SIZE);
+	    memcpy(&dma_buffer_tx[0], &dma_buffer_rx[0], DMA_BUF_HALF_SIZE);
     	}
 #endif
 
@@ -124,13 +127,13 @@ private:
     	static bool first_time = true;
 
     	if(first_time) {
-    		first_time = false;
-    		start_transmission();
+	    first_time = false;
+	    start_transmission();
         }
 #endif
 
     	if(!(narg & (I2S_EVENT_RX_COMPLETE | I2S_EVENT_RX_HALF_COMPLETE))) {
-    		error("Unexpected rx event!\r\n");
+	    error("Unexpected rx event!\r\n");
     	}
 
         toggle2 = !toggle2;
@@ -138,7 +141,7 @@ private:
 
     void transfer_complete_cb(int narg) {
     	if(!(narg & (I2S_EVENT_TX_COMPLETE | I2S_EVENT_TX_HALF_COMPLETE))) {
-    		error("Unexpected tx event!\r\n");
+	    error("Unexpected tx event!\r\n");
     	}
 
         toggle1 = !toggle1;
